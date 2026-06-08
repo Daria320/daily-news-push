@@ -62,7 +62,7 @@ def fetch_json(url):
 # ========== 早间快讯 ==========
 def get_morning_news():
     now = datetime.now()
-    msg = f"## 📰 早间财经快讯\n\n⏰ {now.strftime('%Y-%m-%d %H:%M')}\n\n---\n\n"
+    msg = f"daily ## 📰 早间财经快讯\n\n⏰ {now.strftime('%Y-%m-%d %H:%M')}\n\n---\n\n"
 
     # 获取百度热搜
     try:
@@ -96,7 +96,7 @@ def get_morning_news():
 # ========== 日报 ==========
 def get_daily_report():
     now = datetime.now()
-    msg = f"## 📈 股市日报\n\n⏰ {now.strftime('%Y-%m-%d %H:%M')}\n\n---\n\n"
+    msg = f"daily ## 📈 股市日报\n\n⏰ {now.strftime('%Y-%m-%d %H:%M')}\n\n---\n\n"
 
     # 市场概况
     msg += "### 📊 市场概况\n\n"
@@ -115,7 +115,7 @@ def get_weekly_report():
     start = now - timedelta(days=now.weekday())
     end = start + timedelta(days=6)
 
-    msg = f"## 📊 股市周报\n\n"
+    msg = f"daily ## 📊 股市周报\n\n"
     msg += f"⏰ {now.strftime('%Y-%m-%d %H:%M')}\n"
     msg += f"📅 本周: {start.strftime('%m/%d')} - {end.strftime('%m/%d')}\n\n---\n\n"
 
