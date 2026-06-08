@@ -2,26 +2,73 @@ name: Daily News Push
 
 on:
   schedule:
-    # 北京时间 8:00 = UTC 0:00
+    # 北京时间 8:00 = UTC 0:00 (早间快讯)
     - cron: '0 0 * * *'
-    # 北京时间 20:00 = UTC 12:00 (周一至周五)
+    # 北京时间 20:00 = UTC 12:00 (周一至周五 日报)
     - cron: '0 12 * * 1-5'
-    # 北京时间 20:00 = UTC 12:00 (周六)
+    # 北京时间 20:00 = UTC 12:00 (周六 周报)
     - cron: '0 12 * * 6'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: '推送模式'
+        required: true
+        default: 'morning'
+        type: choice
+        options:
+          - morning
+          - daily
+          - weekly
 
 jobs:
-  push:
+  morning:
+    if: github.event.schedule == '0 0 * * *'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Run
+      - name: Run morning
         env:
           DINGTALK_WEBHOOKS: ${{ secrets.DINGTALK_WEBHOOKS }}
-        run: |
-          python daily_push.py ${{ github.event_name == 'workflow_dispatch' && 'morning' || 'morning' }}
+        run: python daily_push.py morning
+
+  daily:
+    if: github.event.schedule == '0 12 * * 1-5'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run daily
+        env:
+          DINGTALK_WEBHOOKS: ${{ secrets.DINGTALK_WEBHOOKS }}
+        run: python daily_push.py daily
+
+  weekly:
+    if: github.event.schedule == '0 12 * * 6'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run weekly
+        env:
+          DINGTALK_WEBHOOKS: ${{ secrets.DINGTALK_WEBHOOKS }}
+        run: python daily_push.py weekly
+
+  manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run manual
+        env:
+          DINGTALK_WEBHOOKS: ${{ secrets.DINGTALK_WEBHOOKS }}
+        run: python daily_push.py ${{ github.event.inputs.mode }}
