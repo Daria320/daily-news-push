@@ -2,75 +2,26 @@ name: Daily News Push
 
 on:
   schedule:
-    # 每天 8:00 UTC+8 = 0:00 UTC
+    # 北京时间 8:00 = UTC 0:00
     - cron: '0 0 * * *'
-    # 周一至周五 20:00 UTC+8 = 12:00 UTC
+    # 北京时间 20:00 = UTC 12:00 (周一至周五)
     - cron: '0 12 * * 1-5'
-    # 周六 20:00 UTC+8 = 12:00 UTC
+    # 北京时间 20:00 = UTC 12:00 (周六)
     - cron: '0 12 * * 6'
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
 
 jobs:
-  morning-push:
-    if: github.event.schedule == '0 0 * * *'
+  push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          pip install requests
-
-      - name: Run morning push
-        env:
-          DINGTALK_WEBHOOKS: ${{ secrets.DINGTALK_WEBHOOKS }}
-          MODE: morning
-        run: |
-          python daily_push.py morning
-
-  daily-report:
-    if: github.event.schedule == '0 12 * * 1-5'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          pip install requests
-
-      - name: Run daily report
+      - name: Run
         env:
           DINGTALK_WEBHOOKS: ${{ secrets.DINGTALK_WEBHOOKS }}
         run: |
-          python daily_push.py daily
-
-  weekly-report:
-    if: github.event.schedule == '0 12 * * 6'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          pip install requests
-
-      - name: Run weekly report
-        env:
-          DINGTALK_WEBHOOKS: ${{ secrets.DINGTALK_WEBHOOKS }}
-        run: |
-          python daily_push.py weekly
+          python daily_push.py ${{ github.event_name == 'workflow_dispatch' && 'morning' || 'morning' }}
