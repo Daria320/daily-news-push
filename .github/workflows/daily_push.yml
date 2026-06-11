@@ -2,11 +2,11 @@ name: Daily News Push
 
 on:
   schedule:
-    # 北京时间 8:00 = UTC 0:00 (早间快讯)
+    # 早间快讯: 北京时间 8:00 ≈ UTC 0:00 (GitHub 有延迟)
     - cron: '0 0 * * *'
-    # 北京时间 20:00 = UTC 12:00 (周一至周五 日报)
+    # 日报: 北京时间 20:00 ≈ UTC 12:00 (周一至周五)
     - cron: '0 12 * * 1-5'
-    # 北京时间 20:00 = UTC 12:00 (周六 周报)
+    # 周报: 北京时间 20:00 ≈ UTC 12:00 (周六)
     - cron: '0 12 * * 6'
   workflow_dispatch:
     inputs:
